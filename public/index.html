@@ -1,0 +1,21 @@
+<html>
+    <body>
+        <div class = 'container'>
+            <div class = "row">
+                <input placeholder = "Tell what quote you want to generate" type = "text" id = "textInput" class = "input-box">
+                <button id = "submit">Generate</button>
+            </div>
+           <div id = "output"></div>
+        </div>
+        <script src = "socket.io.min.js"></script>
+        <script src = "components.js"></script>
+        <script>
+            const socket = io.connect(`http://localhost:8000/generate`)
+            handleButtonClick((query, queryId) => {
+                socket.emit('input', JSON.stringify({queryId, query}))
+            })
+            
+        </script>
+    </body>
+    
+</html>
