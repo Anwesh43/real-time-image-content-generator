@@ -1,5 +1,4 @@
 
-import axios, { AxiosResponse } from "axios";
 import { Configuration, CreateCompletionRequest, CreateImageRequest, OpenAIApi } from "openai";
 
 export default class OpenAiService {
@@ -10,7 +9,6 @@ export default class OpenAiService {
             apiKey,
             organization
         })
-        console.log("APIKEY", apiKey)
         this.api = new OpenAIApi(configuration)
     }
 
