@@ -15,6 +15,7 @@ interface AnimationNode {
     id : number, 
     cb : AnimationFn
 }
+
 class Loop {
 
     animated : boolean = false 
@@ -63,7 +64,7 @@ class Loader {
 
     shown : boolean = true
     
-    draw(context : CanvasRenderingContext2D) {
+    draw(context : CanvasRenderingContext2D, cx : number, cy : number) {
         if (!this.shown) {
             return 
         }
@@ -72,11 +73,12 @@ class Loader {
         context.lineCap = 'round'
         context.lineWidth = Math.min(window.innerWidth, window.innerHeight) / 80
         const r : number = Math.min(window.innerHeight, window.innerWidth) / 11
-
+        context.save()
+        context.translate(cx, cy)
         context.beginPath()
         for (let j = this.start; j <= this.end; j++) {
-            const x : number = Math.cos(j * Math.PI / 180)
-            const y : number = Math.sin(j * Math.PI / 180)
+            const x : number = r * Math.cos(j * Math.PI / 180)
+            const y : number = r * Math.sin(j * Math.PI / 180)
             if (j == this.start) {
                 context.moveTo(x ,y)
             } else {
@@ -84,6 +86,7 @@ class Loader {
             }
         }
         context.stroke()
+        context.restore()
     }
 
     update() {
@@ -100,8 +103,8 @@ class Loader {
         }
     }
 
-    render(context : CanvasRenderingContext2D) {
-        this.draw(context)
+    render(context : CanvasRenderingContext2D, cx : number, cy : number) {
+        this.draw(context, cx, cy)
         this.update()
     }
 
@@ -131,9 +134,10 @@ class Stage {
         this.loaderId = loop.push(() => {
             if (this.context) {
                 this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-                this.loader.render(this.context)
+                this.loader.render(this.context, this.canvas.width / 2, this.canvas.height / 2)
             }
         })
+        loop.start()
     }
 
     render(image : string, quote : string) {

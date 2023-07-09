@@ -13,10 +13,11 @@
             const socket = io.connect(`http://localhost:8000/generate`)
             handleButtonClick((query, queryId) => {
                 socket.emit('input', JSON.stringify({queryId, query}))
+                console.log("Sending QueryId:::", queryId)
             })
             socket.on('create-image-stage', (data) => {
                 const {quote, imgData, queryId} = JSON.parse(data)
-                renderImageWithText(queryId, imgData, quote)
+                renderImageWithText(queryId, quote, imgData)
             })
             
         </script>

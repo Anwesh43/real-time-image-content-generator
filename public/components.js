@@ -44,7 +44,7 @@ var Loader = /** @class */ (function () {
         this.endDir = 1;
         this.shown = true;
     }
-    Loader.prototype.draw = function (context) {
+    Loader.prototype.draw = function (context, cx, cy) {
         if (!this.shown) {
             return;
         }
@@ -52,10 +52,12 @@ var Loader = /** @class */ (function () {
         context.lineCap = 'round';
         context.lineWidth = Math.min(window.innerWidth, window.innerHeight) / 80;
         var r = Math.min(window.innerHeight, window.innerWidth) / 11;
+        context.save();
+        context.translate(cx, cy);
         context.beginPath();
         for (var j = this.start; j <= this.end; j++) {
-            var x = Math.cos(j * Math.PI / 180);
-            var y = Math.sin(j * Math.PI / 180);
+            var x = r * Math.cos(j * Math.PI / 180);
+            var y = r * Math.sin(j * Math.PI / 180);
             if (j == this.start) {
                 context.moveTo(x, y);
             }
@@ -64,6 +66,7 @@ var Loader = /** @class */ (function () {
             }
         }
         context.stroke();
+        context.restore();
     };
     Loader.prototype.update = function () {
         this.start += 15 * this.startDir;
@@ -79,8 +82,8 @@ var Loader = /** @class */ (function () {
             this.startDir = 1;
         }
     };
-    Loader.prototype.render = function (context) {
-        this.draw(context);
+    Loader.prototype.render = function (context, cx, cy) {
+        this.draw(context, cx, cy);
         this.update();
     };
     Loader.prototype.remove = function () {
@@ -106,9 +109,10 @@ var Stage = /** @class */ (function () {
         this.loaderId = loop.push(function () {
             if (_this.context) {
                 _this.context.clearRect(0, 0, _this.canvas.width, _this.canvas.height);
-                _this.loader.render(_this.context);
+                _this.loader.render(_this.context, _this.canvas.width / 2, _this.canvas.height / 2);
             }
         });
+        loop.start();
     };
     Stage.prototype.render = function (image, quote) {
         var _this = this;
