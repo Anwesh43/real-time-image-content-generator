@@ -14,6 +14,10 @@
             handleButtonClick((query, queryId) => {
                 socket.emit('input', JSON.stringify({queryId, query}))
             })
+            socket.on('create-image-stage', (data) => {
+                const {quote, imgData} = JSON.parse(data)
+                Stage.create(imgData, quote)
+            })
             
         </script>
     </body>

@@ -9,24 +9,30 @@ var Stage = /** @class */ (function () {
     Stage.prototype.render = function () {
         var _this = this;
         var canvas = document.createElement('canvas');
-        canvas.width = 256;
+        canvas.width = 500;
         canvas.height = 300;
         var context = canvas.getContext('2d');
-        document.body.appendChild(canvas);
+        output.appendChild(canvas);
         var img = new Image(256, 256);
         img.src = this.image;
         img.onload = function () {
             if (context) {
-                context.drawImage(img, 0, 0);
-                context.font = context.font.replace(/\d/g, "32");
-                context.fillStyle = 'black';
-                context.fillText(_this.quote, 128 - context.measureText(_this.quote).width / 2, 288);
+                context.fillStyle = '#212121';
+                context.fillRect(0, 0, canvas.width, canvas.height);
+                var x = canvas.width / 2 - img.width / 2;
+                var y = canvas.height / 2 - img.height / 2;
+                context.drawImage(img, x, y);
+                context.font = context.font.replace(/\d+/, "16");
+                console.log(context.font);
+                context.fillStyle = '#BDBDBD';
+                context.fillText(_this.quote, canvas.width / 2 - context.measureText(_this.quote).width / 2, y + img.height + 20);
             }
         };
     };
     Stage.create = function (image, quote) {
         var stage = new Stage(image, quote);
         stage.render();
+        console.log('imageStr', image);
         return stage;
     };
     return Stage;
