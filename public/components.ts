@@ -54,7 +54,7 @@ class QueryContainer {
 
 const queryContainer = new QueryContainer()
 
-const handleButtonClick = (cb : (a : String, b : String) => void) => {
+const handleButtonClick = (cb : (a : string, b : string) => void) => {
     button.onclick = () => {
         const query = inputBox.value 
         queryContainer.addQuery(query)
