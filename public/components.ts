@@ -54,11 +54,71 @@ class Loop {
 }
 
 
+class Loader {
+    
+    start : number = 0 
+    end : number = 0
+    startDir : number = 0 
+    endDir : number = 1 
+
+    shown : boolean = true
+    
+    draw(context : CanvasRenderingContext2D) {
+        if (!this.shown) {
+            return 
+        }
+        
+        context.strokeStyle = "indigo"
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(window.innerWidth, window.innerHeight) / 80
+        const r : number = Math.min(window.innerHeight, window.innerWidth) / 11
+
+        context.beginPath()
+        for (let j = this.start; j <= this.end; j++) {
+            const x : number = Math.cos(j * Math.PI / 180)
+            const y : number = Math.sin(j * Math.PI / 180)
+            if (j == this.start) {
+                context.moveTo(x ,y)
+            } else {
+                context.lineTo(x, y)
+            }
+        }
+        context.stroke()
+    }
+
+    update() {
+        this.start += 15 * this.startDir
+        this.end += 15 * this.endDir 
+        if (this.end == 360 && this.start == 360) {
+            this.startDir = 0
+            this.endDir = 1
+            this.start = 0 
+            this.end = 0 
+        } else if (this.end == 360) {
+            this.endDir = 0 
+            this.startDir = 1
+        }
+    }
+
+    render(context : CanvasRenderingContext2D) {
+        this.draw(context)
+        this.update()
+    }
+
+    remove() {
+        this.shown = false 
+    }
+}
+
+const loop : Loop = new Loop()
+
 class Stage {
     
     context : CanvasRenderingContext2D | null = null 
     canvas : HTMLCanvasElement = document.createElement('canvas')
-    constructor(private image : string, private quote : string) {
+    loader : Loader = new Loader()
+    loaderId : number = -1
+    constructor() {
     
     }
 
@@ -68,16 +128,23 @@ class Stage {
         this.canvas.height = 300 
         this.context = this.canvas.getContext('2d')
         output.appendChild(this.canvas)
+        this.loaderId = loop.push(() => {
+            if (this.context) {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+                this.loader.render(this.context)
+            }
+        })
     }
 
-    render() {
+    render(image : string, quote : string) {
         
         const w : number = this.canvas.width 
         const h : number = this.canvas.height 
 
         const img = new Image(256, 256)
-        img.src = this.image 
+        img.src = image 
         img.onload = () => {
+            loop.stop(this.loaderId)
             if (this.context) {
                 const context : CanvasRenderingContext2D = this.context 
                 context.fillStyle = '#212121'
@@ -88,7 +155,7 @@ class Stage {
                 context.font = context.font.replace(/\d+/, `16`)
                 console.log(context.font)
                 context.fillStyle = '#BDBDBD'
-                context.fillText(this.quote, w / 2 - context.measureText(this.quote).width / 2, y +img.height + 20)
+                context.fillText(quote, w / 2 - context.measureText(quote).width / 2, y +img.height + 20)
             }
             
         }
@@ -97,8 +164,8 @@ class Stage {
 
 
     static create(image : string, quote : string) : Stage {
-        const stage : Stage = new Stage(image, quote)
-        stage.render()
+        const stage : Stage = new Stage()
+        stage.initCanvas()
         console.log('imageStr', image)
         return stage 
     }
