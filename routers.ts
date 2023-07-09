@@ -17,7 +17,7 @@ const queryRouter : Router = {
         console.log('FromRouter: Data', data)
         const quote = await openAiService.generateText(query)
         const imgData = await openAiService.generateImage(quote)  
-        socket.emit("create-image-stage", JSON.stringify({quote, imgData}))
+        socket.emit("create-image-stage", JSON.stringify({quote, imgData, queryId}))
     }
 }
 
