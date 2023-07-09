@@ -1,6 +1,6 @@
 
 import axios, { AxiosResponse } from "axios";
-import { Configuration, CreateCompletionRequest, CreateCompletionResponse, CreateImageRequest, OpenAIApi } from "openai";
+import { Configuration, CreateCompletionRequest, CreateImageRequest, OpenAIApi } from "openai";
 
 export default class OpenAiService {
     api : OpenAIApi
@@ -10,6 +10,7 @@ export default class OpenAiService {
             apiKey,
             organization
         })
+        console.log("APIKEY", apiKey)
         this.api = new OpenAIApi(configuration)
     }
 
@@ -22,20 +23,21 @@ export default class OpenAiService {
         const response = await this.api.createImage(imageRequest)
         const url = response.data.data[0].url 
         console.log(`Downloading response url ${url}`)
-        const downloadFileResponse = await axios.get(url || '', {
-            responseType: "arraybuffer"
-        })
-        const base64Str = Buffer.from(downloadFileResponse.data, 'binary').toString('base64')
-        return base64Str
+        // const downloadFileResponse = await axios.get(url || '', {
+        //     responseType: "arraybuffer"
+        // })
+        // const base64Str = Buffer.from(downloadFileResponse.data, 'binary').toString('base64')
+        // console.log("Downloaded Image", base64Str)
+        return url || ''
     }
 
     async generateText(prompt : string) : Promise<string> {
         const textRequest : CreateCompletionRequest = {
-            prompt, 
+            prompt: `${prompt}, limit the response to 10 words`, 
             temperature: 0.1,
             model: "text-davinci-002"
         }
-        const response : AxiosResponse<CreateCompletionResponse> = await this.api.createCompletion(textRequest)
+        const response  = await this.api.createCompletion(textRequest)
         
         return response.data?.choices[0]?.text || ""
     }

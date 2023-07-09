@@ -1,3 +1,4 @@
+import { config } from "dotenv"
 import { Socket } from "socket.io"
 import OpenAiService from "./OpenAiService"
 
@@ -5,6 +6,7 @@ interface Router {
     path : string, 
     handler : (a : any, s : Socket) => void 
 }
+config()
 const openAiService = new OpenAiService(process.env.OPEN_API_KEY || '', process.env.OPEN_AI_ORGID || '')
 
 const queryRouter : Router = {
@@ -14,8 +16,8 @@ const queryRouter : Router = {
         console.log(`FromRouter: Query received with queryId ${query} ${queryId}`)
         console.log('FromRouter: Data', data)
         const quote = await openAiService.generateText(query)
-        const imgData = await openAiService.generateImage(quote)
-        socket.emit("create-image-stage", JSON.stringify(quote, imgData))
+        const imgData = await openAiService.generateImage(quote)  
+        socket.emit("create-image-stage", JSON.stringify({quote, imgData}))
     }
 }
 
