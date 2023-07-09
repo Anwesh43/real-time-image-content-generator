@@ -163,10 +163,9 @@ class Stage {
 
 
 
-    static create(image : string, quote : string) : Stage {
+    static create() : Stage {
         const stage : Stage = new Stage()
         stage.initCanvas()
-        console.log('imageStr', image)
         return stage 
     }
 }
@@ -187,10 +186,17 @@ class QueryContainer {
 
 const queryContainer = new QueryContainer()
 
+const stageMap : Record<string, Stage> = {}
+
 const handleButtonClick = (cb : (a : string, b : string) => void) => {
     button.onclick = () => {
         const query = inputBox.value 
         queryContainer.addQuery(query)
+        stageMap[queryContainer.getCurrQueryId()] = Stage.create()
         cb(query, queryContainer.getCurrQueryId())
     }
+}
+
+const renderImageWithText = (queryId : string, quote : string, image : string) => {
+    stageMap[queryId].render(image, quote)
 }

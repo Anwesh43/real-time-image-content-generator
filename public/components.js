@@ -132,10 +132,9 @@ var Stage = /** @class */ (function () {
             }
         };
     };
-    Stage.create = function (image, quote) {
+    Stage.create = function () {
         var stage = new Stage();
         stage.initCanvas();
-        console.log('imageStr', image);
         return stage;
     };
     return Stage;
@@ -155,10 +154,15 @@ var QueryContainer = /** @class */ (function () {
     return QueryContainer;
 }());
 var queryContainer = new QueryContainer();
+var stageMap = {};
 var handleButtonClick = function (cb) {
     button.onclick = function () {
         var query = inputBox.value;
         queryContainer.addQuery(query);
+        stageMap[queryContainer.getCurrQueryId()] = Stage.create();
         cb(query, queryContainer.getCurrQueryId());
     };
+};
+var renderImageWithText = function (queryId, quote, image) {
+    stageMap[queryId].render(image, quote);
 };
